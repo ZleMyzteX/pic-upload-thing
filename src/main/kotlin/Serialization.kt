@@ -1,19 +1,14 @@
 package er.codes
 
-import io.ktor.serialization.kotlinx.json.*
+import com.fasterxml.jackson.databind.SerializationFeature
+import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.contentnegotiation.*
-import kotlinx.serialization.json.Json
 
-/**
- * Configures JSON serialization for API responses
- */
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
-        json(Json {
-            prettyPrint = true
-            isLenient = true
-            ignoreUnknownKeys = true
-        })
+        jackson {
+            enable(SerializationFeature.INDENT_OUTPUT)
+        }
     }
 }

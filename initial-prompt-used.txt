@@ -1,0 +1,66 @@
+🧠 Final IntelliJ-Ready Prompt
+
+I’m building a Ktor backend that handles media uploads from mobile clients (Android & iOS).
+Please generate complete runnable Kotlin code for a Ktor server that:
+	•	✅ Supports all common image types (jpg, jpeg, png, gif, webp, heic, etc.)
+	•	✅ Supports video types (mp4, mov, avi, mkv, webm, etc.)
+	•	✅ Lets users optionally specify a name for their upload (e.g. “Vacation Photos”)
+	•	✅ Allows uploading multiple files at once using multipart/form-data
+	•	✅ Works smoothly for mobile clients (Android & iOS) using HTTP POST requests
+	•	✅ Can handle 50–100 concurrent users uploading at the same time
+	•	✅ Saves files to a local folder (e.g. /uploads) organized by user name + timestamp
+	•	✅ Includes a GET /export endpoint that zips and returns all uploaded files
+
+⸻
+
+Requirements:
+	1.	Use Ktor (latest stable version) as the backend framework.
+	2.	Include all necessary dependencies in build.gradle.kts — such as:
+	•	ktor-server-core
+	•	ktor-server-netty
+	•	ktor-server-content-negotiation
+	•	ktor-server-cors
+	•	ktor-server-metrics
+	•	ktor-server-call-logging
+	•	ktor-server-compression
+	•	ktor-server-auto-head-response
+	•	ktor-server-partial-content
+	•	ktor-server-status-pages
+	•	ktor-server-auth
+	•	ktor-server-sessions
+	•	ktor-server-rate-limit (optional for durability)
+	•	ktor-server-mustache (optional for templates)
+	•	kotlinx-coroutines-core
+	•	and any others required for multipart upload & zipping files
+	3.	Provide a minimal application.conf and Main.kt entry point.
+	4.	Implement an upload route:
+
+post("/upload") { ... }
+
+that:
+	•	Parses multipart form data
+	•	Validates MIME types and file size
+	•	Saves files asynchronously to /uploads/{optionalName}/{timestamp}/filename.ext
+	•	Returns a JSON response listing uploaded file paths
+
+	5.	Implement a /export endpoint that zips all files and serves them as a download.
+	6.	Explain (in code comments) how to tune performance for 50–100 concurrent users
+(coroutines, async file streaming, etc.).
+	7.	Provide short sample code for:
+	•	An Android client (using Ktor Client) that uploads multiple images/videos
+	•	An iOS client (Swift + URLSession) doing the same
+	8.	Ensure the generated code is ready to run in IntelliJ IDEA —
+i.e. the project should compile and start with ./gradlew run.
+
+⸻
+
+Output everything as a complete Ktor project structure:
+
+build.gradle.kts
+resources/application.conf
+src/main/kotlin/Application.kt
+src/main/kotlin/routes/UploadRoutes.kt
+src/main/kotlin/utils/FileUtils.kt
+(plus any helper classes you think are needed)
+
+Add concise comments throughout explaining design choices and good practices for production readiness.

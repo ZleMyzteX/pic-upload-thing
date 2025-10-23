@@ -4,7 +4,6 @@ val ktorVer: String by project
 
 plugins {
     kotlin("jvm") version "2.2.20"
-    kotlin("plugin.serialization") version "2.2.20"
     id("io.ktor.plugin") version "3.3.1"
     id("com.github.ben-manes.versions") version "0.53.0"
 }
@@ -32,7 +31,9 @@ dependencies {
 
     // Content Negotiation & Serialization
     implementation("io.ktor:ktor-server-content-negotiation:$ktorVer")
-    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVer")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVer")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
 
     // CORS & Security
     implementation("io.ktor:ktor-server-cors:$ktorVer")
@@ -63,11 +64,6 @@ dependencies {
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.10.2")
 
-    // JSON Serialization
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
-
-    // Date/Time
-    implementation("org.jetbrains.kotlinx:kotlinx-datetime:0.7.1-0.6.x-compat")
 
     // Testing
     testImplementation("io.ktor:ktor-server-test-host:$ktorVer")
