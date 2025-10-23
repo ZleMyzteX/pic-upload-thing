@@ -1,0 +1,16 @@
+ktor:
+  application:
+    modules:
+      - er.codes.ApplicationKt.module
+  deployment:
+    port: 8080
+    # Performance tuning for 50-100 concurrent users
+    # Netty's event loop threads (defaults to availableProcessors * 2)
+    # Increase for heavy I/O workloads
+    connectionGroupSize: 4
+    workerGroupSize: 8
+    callGroupSize: 16
+    # Request size limits for file uploads
+    # 500MB max request size for large video uploads
+    maxContentLength: 524288000
+  development: true

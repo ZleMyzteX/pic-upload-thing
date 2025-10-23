@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Picture Upload</title>
+
+    <!-- Uppy CSS -->
+    <link href="https://releases.transloadit.com/uppy/v3.21.0/uppy.min.css" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #uppy-dashboard {
+            margin-bottom: 20px;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-bottom: 15px;
+        }
+
+        .upload-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .upload-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+            display: block;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+            display: block;
+        }
+
+        .status-message h3 {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .status-message p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .file-list {
+            list-style: none;
+            margin-top: 10px;
+            padding-left: 10px;
+        }
+
+        .file-list li {
+            padding: 5px 0;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .file-list li::before {
+            content: "✓ ";
+            color: #28a745;
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        /* Uppy customization for mobile */
+        .uppy-Dashboard-inner {
+            border: 2px dashed #667eea !important;
+            border-radius: 10px !important;
+        }
+
+        .uppy-Dashboard-AddFiles {
+            border-radius: 10px !important;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px;
+                border-radius: 15px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .upload-btn {
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📸 Picture Upload</h1>
+        <p class="subtitle">Upload your photos and videos</p>
+
+        <div class="input-group">
+            <label for="uploadName">Upload Name (Optional)</label>
+            <input type="text" id="uploadName" placeholder="e.g., Vacation Photos, Birthday Party">
+        </div>
+
+        <div id="uppy-dashboard"></div>
+
+        <button class="upload-btn" id="uploadBtn">Upload Files</button>
+
+        <div id="statusMessage" class="status-message"></div>
+
+        <a href="/static/export.html" style="display: block; text-align: center; color: #667eea; text-decoration: none; font-weight: 600; padding: 12px; border-radius: 8px; transition: background 0.2s; margin-top: 10px;" onmouseover="this.style.background='#f0f0f0'" onmouseout="this.style.background='transparent'">
+            📦 Go to Export Page →
+        </a>
+    </div>
+
+    <!-- Uppy JS -->
+    <script src="https://releases.transloadit.com/uppy/v3.21.0/uppy.min.js"></script>
+
+    <script>
+        // Initialize Uppy
+        const uppy = new Uppy.Uppy({
+            restrictions: {
+                maxFileSize: 50 * 1024 * 1024, // 50MB per file
+                allowedFileTypes: ['image/*', 'video/*']
+            },
+            autoProceed: false
+        });
+
+        // Add Dashboard plugin for mobile-friendly UI
+        uppy.use(Uppy.Dashboard, {
+            inline: true,
+            target: '#uppy-dashboard',
+            showProgressDetails: true,
+            hideUploadButton: true,
+            proudlyDisplayPoweredByUppy: false,
+            height: 350,
+            note: 'Images and videos only, up to 50MB per file',
+            metaFields: []
+        });
+
+        // Add XHR Upload plugin
+        uppy.use(Uppy.XHRUpload, {
+            endpoint: '/upload',
+            formData: true,
+            fieldName: 'files',
+            method: 'POST',
+            getResponseData(responseText, response) {
+                return JSON.parse(responseText);
+            }
+        });
+
+        const uploadBtn = document.getElementById('uploadBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const uploadNameInput = document.getElementById('uploadName');
+
+        // Handle upload button click
+        uploadBtn.addEventListener('click', async () => {
+            const files = uppy.getFiles();
+
+            if (files.length === 0) {
+                showStatus('error', 'No files selected', 'Please add some files before uploading.');
+                return;
+            }
+
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+            statusMessage.style.display = 'none';
+
+            // Add uploadName to the request if provided
+            const uploadName = uploadNameInput.value.trim();
+            if (uploadName) {
+                uppy.setMeta({ uploadName: uploadName });
+            }
+
+            try {
+                // Trigger the upload
+                await uppy.upload();
+            } catch (error) {
+                console.error('Upload error:', error);
+            }
+        });
+
+        // Listen for upload success
+        uppy.on('complete', (result) => {
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Upload Files';
+
+            if (result.successful && result.successful.length > 0) {
+                // Parse response from the first file (all files are in one batch)
+                const response = result.successful[0].response.body;
+
+                if (response.success) {
+                    const fileListHTML = response.uploadedFiles
+                        .map(file => `<li>${file.originalName} (${formatBytes(file.size)})</li>`)
+                        .join('');
+
+                    showStatus(
+                        'success',
+                        `✅ Successfully uploaded ${response.totalFiles} file(s)`,
+                        `<p>Total size: ${formatBytes(response.totalSize)}</p>
+                         <p>Upload path: ${response.uploadPath}</p>
+                         <ul class="file-list">${fileListHTML}</ul>`
+                    );
+
+                    // Clear the files from Uppy
+                    uppy.cancelAll();
+                    uploadNameInput.value = '';
+                } else {
+                    showStatus('error', 'Upload failed', response.error || 'Unknown error');
+                }
+            } else if (result.failed && result.failed.length > 0) {
+                const errorMsg = result.failed[0].error || 'Unknown error occurred';
+                showStatus('error', 'Upload failed', errorMsg);
+            }
+        });
+
+        // Listen for upload errors
+        uppy.on('upload-error', (file, error, response) => {
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Upload Files';
+
+            let errorMsg = 'An error occurred during upload';
+            if (response && response.body) {
+                try {
+                    const errorData = typeof response.body === 'string'
+                        ? JSON.parse(response.body)
+                        : response.body;
+                    errorMsg = errorData.error || errorData.details || errorMsg;
+                } catch (e) {
+                    errorMsg = response.body;
+                }
+            } else if (error) {
+                errorMsg = error.message || error;
+            }
+
+            showStatus('error', 'Upload failed', errorMsg);
+        });
+
+        // Helper function to show status messages
+        function showStatus(type, title, message) {
+            statusMessage.className = `status-message ${type}`;
+            statusMessage.innerHTML = `<h3>${title}</h3><div>${message}</div>`;
+            statusMessage.style.display = 'block';
+
+            // Scroll to status message on mobile
+            statusMessage.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Helper function to format bytes
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        // Mobile-friendly: Enable camera capture on mobile devices
+        if (typeof navigator !== 'undefined' &&
+            (navigator.userAgent.match(/iPhone|iPad|iPod/i) ||
+             navigator.userAgent.match(/Android/i))) {
+            console.log('Mobile device detected - camera capture enabled');
+        }
+    </script>
+</body>
+</html>
+
